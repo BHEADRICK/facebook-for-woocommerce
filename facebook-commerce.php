@@ -2200,20 +2200,20 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
-	private function get_brands_array(){
+	private function get_cats_array(){
 	   global $wpdb;
-	    $brands = [];
+	    $cats = [];
 
 	   $terms = $wpdb->get_results("select t.term_id, t.name from 
 $wpdb->term_taxonomy tt
 join $wpdb->terms t on t.term_id = tt.term_id
-where taxonomy = 'pa_product-brand'");
+where taxonomy = 'product_cat'");
 
 foreach($terms as $term){
-    $brands[$term->term_id] = $term->name;
+    $cats[$term->term_id] = $term->name;
 }
 
-	    return $brands;
+	    return $cats;
 
     }
 
@@ -2240,10 +2240,10 @@ foreach($terms as $term){
 				),
 				'default'     => '',
 			),
-			'wc_brands'=>[
-			        'title'=>'Brands',
+			'wc_cats'=>[
+			        'title'=>'Product Categories',
                     'type'=>'multiselect',
-                    'options'=>$this->get_brands_array(),
+                    'options'=>$this->get_cats_array(),
                 'class'=>'wc-enhanced-select-nostd'
             ],
 			'fb_product_catalog_id'            => array(
