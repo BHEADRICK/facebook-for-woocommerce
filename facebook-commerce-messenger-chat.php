@@ -53,7 +53,9 @@ if ( ! class_exists( 'WC_Facebookcommerce_MessengerChat' ) ) :
   page_id=\"%s\"
   %s
   %s
-  %s /></div>
+  %s
+  greeting_dialog_display=\"hide\"
+ /></div>
 <!-- Facebook JSSDK -->
 <script>
   window.fbAsyncInit = function() {

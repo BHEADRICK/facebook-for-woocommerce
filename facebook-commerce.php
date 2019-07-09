@@ -1729,6 +1729,19 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->maybe_display_facebook_api_messages();
 	}
 
+	private function get_tax_query() {
+	    $tax_query = [];
+
+	    if(isset($this->settings['wc_brands'])){
+	    $tax_query[] = [
+		    'taxonomy' => 'pa_product-brand',
+		    'field'    => 'term_id',
+		    'terms'    => $this->settings['wc_brands']
+        ];
+	    }
+
+	    return $tax_query;
+    }
 	function get_sample_product_feed() {
 		ob_start();
 
@@ -1738,7 +1751,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'post_status'    => 'publish',
 			'posts_per_page' => 12,
 			'fields'         => 'ids',
-		);
+			'tax_query'=>$this->get_tax_query()		);
 
 		$post_ids = get_posts( $args );
 		$items    = array();
@@ -1802,6 +1815,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'post_type'      => 'product',
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
+				'tax_query'=>$this->get_tax_query()
 			)
 		);
 
@@ -2198,6 +2212,23 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		wp_die();
 	}
 
+	private function get_brands_array(){
+	   global $wpdb;
+	    $brands = [];
+
+	   $terms = $wpdb->get_results("select t.term_id, t.name from 
+$wpdb->term_taxonomy tt
+join $wpdb->terms t on t.term_id = tt.term_id
+where taxonomy = 'pa_product-brand'");
+
+foreach($terms as $term){
+    $brands[$term->term_id] = $term->name;
+}
+
+	    return $brands;
+
+    }
+
 	/**
 	 * Initialize Settings Form Fields
 	 *
@@ -2221,6 +2252,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				),
 				'default'     => '',
 			),
+			'wc_brands'=>[
+			        'title'=>'Brands',
+                    'type'=>'multiselect',
+                    'options'=>$this->get_brands_array(),
+                'class'=>'wc-enhanced-select-nostd'
+            ],
 			'fb_product_catalog_id'            => array(
 				'title'       => __( 'Product Catalog ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
@@ -2266,6 +2303,12 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				),
 				'default'     => '',
 			),
+			'is_messenger_chat_plugin_enabled'=>[
+                'title'=>'Enable Chat',
+                'type'=>'checkbox',
+                'description'=>'',
+                'default'=>'no'
+			],
 			'fb_api_key'                       => array(
 				'title'       => __( 'API Key', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
