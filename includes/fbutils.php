@@ -340,6 +340,20 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 			return get_posts( $args );
 		}
 
+		public static function get_tax_query() {
+			$tax_query = [];
+			$settings = get_option('woocommerce_facebookcommerce_settings');
+			if(isset($settings['wc_brands']) && $settings['wc_brands'] !== ''){
+				$tax_query[] = [
+					'taxonomy' => 'pa_product-brand',
+					'field'    => 'term_id',
+					'terms'    => $settings['wc_brands']
+				];
+			}
+
+			return $tax_query;
+		}
+
 		/**
 		 * Helper log function for debugging
 		 */

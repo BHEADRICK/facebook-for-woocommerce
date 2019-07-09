@@ -1729,19 +1729,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 		$this->maybe_display_facebook_api_messages();
 	}
 
-	private function get_tax_query() {
-	    $tax_query = [];
 
-	    if(isset($this->settings['wc_brands'])){
-	    $tax_query[] = [
-		    'taxonomy' => 'pa_product-brand',
-		    'field'    => 'term_id',
-		    'terms'    => $this->settings['wc_brands']
-        ];
-	    }
-
-	    return $tax_query;
-    }
 	function get_sample_product_feed() {
 		ob_start();
 
@@ -1751,7 +1739,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 			'post_status'    => 'publish',
 			'posts_per_page' => 12,
 			'fields'         => 'ids',
-			'tax_query'=>$this->get_tax_query()		);
+			'tax_query'=>WC_Facebookcommerce_Utils::get_tax_query()		);
 
 		$post_ids = get_posts( $args );
 		$items    = array();
@@ -1815,7 +1803,7 @@ class WC_Facebookcommerce_Integration extends WC_Integration {
 				'post_type'      => 'product',
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
-				'tax_query'=>$this->get_tax_query()
+				'tax_query'=>WC_Facebookcommerce_Utils::get_tax_query()
 			)
 		);
 
