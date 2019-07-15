@@ -342,12 +342,12 @@ if ( ! class_exists( 'WC_Facebookcommerce_Utils' ) ) :
 
 		public static function get_tax_query() {
 			$tax_query = [];
-			$settings = get_option('woocommerce_facebookcommerce_settings');
-			if(isset($settings['wc_cats']) && $settings['wc_cats'] !== ''){
+			$cats = get_option('fb_product_cats');
+			if($cats && $cats !== ''){
 				$tax_query[] = [
 					'taxonomy' => 'product_cat',
 					'field'    => 'term_id',
-					'terms'    => $settings['wc_cats']
+					'terms'    => $cats
 				];
 			}
 

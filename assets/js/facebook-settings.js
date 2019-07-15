@@ -916,6 +916,22 @@ function fbe_init_nux_messages() {
 	);
 }
 
+function saveProductCats(){
+	var selectedCats = jQuery('#woocommerce_facebookcommerce_wc_cats').val();
+
+    jQuery('.wc_cats_status').text('saving...')
+
+    ajax('ajax_update_fb_option',
+    {
+        "option": "fb_product_cats",
+        "option_value": selectedCats,
+        "_ajax_nonce": wc_facebook_settings_jsx.nonce,
+    }, function() {
+            jQuery('.wc_cats_status').text('Product Categories updated. Resync products to continue')
+        })
+
+}
+
 function saveAutoSyncSchedule() {
 	var isChecked = document.getElementsByClassName( 'autosyncCheck' )[0].checked;
 	var timebox   = document.getElementsByClassName( 'autosyncTime' )[0];

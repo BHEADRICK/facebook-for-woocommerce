@@ -2217,6 +2217,21 @@ foreach($terms as $term){
 
     }
 
+    private function get_cats_html(){
+	    $options = $this->get_cats_array();
+
+	    $values = get_option('fb_product_cats');
+
+	    $html = '';
+
+	    foreach($options as $key=> $option){
+	        $selected= $values && is_array($values) && in_array($option, $values)?'selected': '';
+	        $html .= "<option value='$key' $selected >$option</option>";
+        }
+
+        return $html;
+    }
+
 	/**
 	 * Initialize Settings Form Fields
 	 *
@@ -2240,12 +2255,6 @@ foreach($terms as $term){
 				),
 				'default'     => '',
 			),
-			'wc_cats'=>[
-			        'title'=>'Product Categories',
-                    'type'=>'multiselect',
-                    'options'=>$this->get_cats_array(),
-                'class'=>'wc-enhanced-select-nostd'
-            ],
 			'fb_product_catalog_id'            => array(
 				'title'       => __( 'Product Catalog ID', 'facebook-for-woocommerce' ),
 				'type'        => 'text',
@@ -2705,6 +2714,15 @@ foreach($terms as $term){
 					 />
 				Sync Short Description Instead of Description
 			  </div>
+
+              <div><label for="woocommerce_facebookcommerce_wc_cats">Sync Product Categories</label>
+                  <select multiple="multiple" onchange="saveProductCats()" class="multiselect wc-enhanced-select-nostd" name="woocommerce_facebookcommerce_wc_cats[]" id="woocommerce_facebookcommerce_wc_cats" style="">
+                      <?= $this->get_cats_html(); ?>
+                  </select>
+                  <div class="wc_cats_status">
+
+                  </div>
+              </div>
 		  </div>
 		</div>
 	  </div>
@@ -2959,8 +2977,26 @@ foreach($terms as $term){
 		check_ajax_referer( 'wc_facebook_settings_jsx' );
 		WC_Facebookcommerce_Utils::check_woo_ajax_permissions( 'update fb options', true );
 		if ( isset( $_POST ) && stripos( $_POST['option'], 'fb_' ) === 0 ) {
-			update_option( sanitize_text_field( $_POST['option'] ), sanitize_text_field( $_POST['option_value'] ) );
+			update_option( sanitize_text_field( $_POST['option'] ),  $this->sanitize_text_or_array_field( $_POST['option_value'] )  );
 		}
 		wp_die();
+	}
+
+
+	function sanitize_text_or_array_field($array_or_string) {
+		if( is_string($array_or_string) ){
+			$array_or_string = sanitize_text_field($array_or_string);
+		}elseif( is_array($array_or_string) ){
+			foreach ( $array_or_string as $key => &$value ) {
+				if ( is_array( $value ) ) {
+					$value = $this->sanitize_text_or_array_field($value);
+				}
+				else {
+					$value = sanitize_text_field( $value );
+				}
+			}
+		}
+
+		return $array_or_string;
 	}
 }
