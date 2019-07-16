@@ -2225,7 +2225,7 @@ foreach($terms as $term){
 	    $html = '';
 
 	    foreach($options as $key=> $option){
-	        $selected= $values && is_array($values) && in_array($option, $values)?'selected': '';
+	        $selected= $values && is_array($values) && in_array($key, $values)?'selected': '';
 	        $html .= "<option value='$key' $selected >$option</option>";
         }
 
